@@ -2021,7 +2021,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Fungsi untuk tombol melayang (Play / Pause)
-  function toggleMusic() {
+function toggleMusic() {
     const audio = document.getElementById("bg-music");
     const iconOn = document.getElementById("music-icon-on");
     const iconOff = document.getElementById("music-icon-off");
@@ -2029,16 +2029,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!audio) return;
 
     if (audio.paused) {
-      // Jika musik mati, NYALAKAN KEMBALI dari detik ke-4
       playMusicFromStartPoint(audio);
+      localStorage.setItem("isMusicPlaying", "true");
       
-      iconOn.classList.remove("hidden");
-      iconOff.classList.add("hidden");
+      if (iconOn && iconOff) {
+        iconOn.classList.remove("hidden");
+        iconOff.classList.add("hidden");
+      }
     } else {
-      // Jika musik menyala, MATIKAN (pause)
       audio.pause();
-      iconOn.classList.add("hidden");
-      iconOff.classList.remove("hidden");
+      localStorage.setItem("isMusicPlaying", "false");
+      
+      if (iconOn && iconOff) {
+        iconOn.classList.add("hidden");
+        iconOff.classList.remove("hidden");
+      }
     }
   }
 
@@ -2051,31 +2056,64 @@ document.addEventListener("DOMContentLoaded", function () {
     const iconOn = document.getElementById("music-icon-on");
     const iconOff = document.getElementById("music-icon-off");
 
-    // 2. Cek apakah ada sinyal dari Index.html untuk menyalakan musik
-    if (localStorage.getItem("playMusic") === "true") {
-      playMusicFromStartPoint(audio);
-      localStorage.removeItem("playMusic"); // Bersihkan status
+    const playMusicSignal = localStorage.getItem("playMusic");
+    const isMusicPlayingSaved = localStorage.getItem("isMusicPlaying") === "true";
 
-      // Pastikan ikon tombol melayang dalam kondisi menyala/berputar
-      if (iconOn && iconOff) {
-        iconOn.classList.remove("hidden");
-        iconOff.classList.add("hidden");
-      }
-    } else {
-      // Jika tidak ada sinyal (misal halaman di-refresh manual), set ikon ke posisi mati
-      if (audio && audio.paused) {
+    // Jika sebelumnya menyala atau ada sinyal buka undangan
+    if (playMusicSignal === "true" || isMusicPlayingSaved) {
+      // Coba jalankan
+      playMusicFromStartPoint(audio);
+      
+      audio.play().then(() => {
+        // Jika browser mengizinkan (jarang terjadi saat refresh, tapi mungkin)
+        localStorage.setItem("isMusicPlaying", "true");
+        if (iconOn && iconOff) {
+          iconOn.classList.remove("hidden");
+          iconOff.classList.add("hidden");
+        }
+      }).catch(error => {
+        // DIBLOKIR BROWSER SAAT REFRESH (Ini normal & pasti terjadi)
+        // Kita sinkronkan tombol ke posisi mati agar sesuai dengan kondisi asli browser
+        audio.pause();
+        localStorage.setItem("isMusicPlaying", "false");
         if (iconOn && iconOff) {
           iconOn.classList.add("hidden");
           iconOff.classList.remove("hidden");
         }
+      });
+      
+      localStorage.removeItem("playMusic");
+    } else {
+      if (audio) {
+        audio.pause();
+      }
+      if (iconOn && iconOff) {
+        iconOn.classList.add("hidden");
+        iconOff.classList.remove("hidden");
       }
     }
 
-    // 3. Loop manual agar audio kembali ke detik ke-4 saat lagu habis/selesai
+    // Loop manual agar audio kembali ke titik awal saat lagu habis/selesai
     if (audio) {
       audio.addEventListener("ended", function () {
         playMusicFromStartPoint(audio);
       });
+    }
+  });
+
+  // Listener klik pertama setelah refresh untuk langsung menghidupkan musik jika user ingin melanjutkannya
+  document.addEventListener("click", function unlockAudio() {
+    const audio = document.getElementById("bg-music");
+    const iconOn = document.getElementById("music-icon-on");
+    const iconOff = document.getElementById("music-icon-off");
+    
+    // Jika user sebelumnya mendengarkan musik, klik pertama di layar akan langsung menyalakannya kembali
+    if (localStorage.getItem("isMusicPlaying") === "true" && audio && audio.paused) {
+      playMusicFromStartPoint(audio);
+      if (iconOn && iconOff) {
+        iconOn.classList.remove("hidden");
+        iconOff.classList.add("hidden");
+      }
     }
   });
 
