@@ -62,6 +62,30 @@
     </script>
 
     <style>
+
+      /* Gaya Latar Belakang Foto per Section */
+      .section-bg {
+  position: relative;
+  /* Atur skala ukuran background di sini */
+  background-size:  50px 50px; /* Ganti dengan ukuran yang diinginkan, misal: 'contain', '100% 100%', atau '500px auto' */
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+      /* Atur transparansi overlay agar gambar latar belakang tetap kelihatan */
+      .section-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(247, 249, 244, 0.75); /* Diturunkan ke 0.75 supaya foto lebih nampak */
+        z-index: 1;
+      }
+
+      .section-bg > * {
+        position: relative;
+        z-index: 2;
+      }
+
       /* Efek Teks Warna Emas Klasik */
       .text-gold {
         background: linear-gradient(
@@ -1414,26 +1438,26 @@
     </audio>
 
     <!-- Floating Music Control Button -->
-<button
-  id="floating-music-btn"
-  onclick="toggleMusic()"
-  aria-label="Matikan atau Nyalakan Musik"
-  class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#3a5a40] text-[#f3e5ab] border border-[#f3e5ab]/30 shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
->
-  <!-- Icon Musik / Speaker Aktif -->
-  <svg id="music-icon-on" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 animate-spin" style="animation-duration: 6s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M9 18V5l12-2v13"></path>
-    <circle cx="6" cy="18" r="3"></circle>
-    <circle cx="18" cy="16" r="3"></circle>
-  </svg>
+  <button
+    id="floating-music-btn"
+    onclick="toggleMusic()"
+    aria-label="Matikan atau Nyalakan Musik"
+    class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-[#3a5a40] text-[#f3e5ab] border border-[#f3e5ab]/30 shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer group"
+  >
+    <!-- Icon Musik / Speaker Aktif -->
+    <svg id="music-icon-on" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 animate-spin" style="animation-duration: 6s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V5l12-2v13"></path>
+      <circle cx="6" cy="18" r="3"></circle>
+      <circle cx="18" cy="16" r="3"></circle>
+    </svg>
 
-  <!-- Icon Mute / Speaker Mati (Awalnya disembunyikan) -->
-  <svg id="music-icon-off" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="1" y1="1" x2="23" y2="23"></line>
-    <path d="M9 9v9a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-2m3-5.5V5l-9 3"></path>
-    <path d="M9 3.88V3"></path>
-  </svg>
-</button>
+    <!-- Icon Mute / Speaker Mati (Awalnya disembunyikan) -->
+    <svg id="music-icon-off" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="1" y1="1" x2="23" y2="23"></line>
+      <path d="M9 9v9a3 3 0 0 0 3 3 3 3 0 0 0 3-3v-2m3-5.5V5l-9 3"></path>
+      <path d="M9 3.88V3"></path>
+    </svg>
+  </button>
 
     <!-- Konten Utama (Maksimal lebar untuk tampilan mobile-first) -->
     <main
@@ -1449,7 +1473,8 @@
       
       <!-- Header Section -->
       <section
-        class="flow-section header-flow py-14 px-6 text-center relative overflow-hidden"
+        class="flow-section header-flow py-14 px-6 text-center relative overflow-hidden section-bg"
+        style="background-image: url('1.png') !important; background-size: 100% auto !important; background-position: top center !important;"
       >
       
         <div class="flow-top-bloom" aria-hidden="true"></div>
@@ -1544,7 +1569,8 @@
 
       <!-- Waktu & Tempat Section -->
       <section
-        class="flow-section event-flow py-16 px-6 text-center relative overflow-hidden"
+        class="flow-section header-flow py-16 px-6 text-center relative overflow-hidden section-bg"
+        style="background-image: url('2.png') !important; background-size: 100% auto !important; background-position: top center !important;"
       >
         <div class="flow-top-bloom" aria-hidden="true"></div>
         <div class="flow-bottom-bloom" aria-hidden="true"></div>
@@ -1857,71 +1883,116 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
 
-      // Fungsi untuk menyimpan pesan baru ke localStorage
+// Ganti dengan URL Web App dari Google Apps Script Anda yang berakhiran /exec
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPj-P0qPPoDptxaE_xODansbajQO3NMEU3-a7moxgyYpPTu_8BZ-mrjGM6c_mz8i_4/exec";
+
+// Fungsi untuk mengirim pesan ke Google Spreadsheet
 function submitMessage(event) {
   event.preventDefault();
 
   const nameInput = document.getElementById("guest-sender-name");
   const messageInput = document.getElementById("guest-message-text");
+  const submitBtn = event.target.querySelector("button[type='submit']");
 
-  const newMsg = {
-    name: nameInput.value.trim(),
-    message: messageInput.value.trim(),
-    date: new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  const payload = {
+    nama: nameInput.value.trim(),
+    pesan: messageInput.value.trim()
   };
 
-  // Ambil data pesan yang sudah ada atau buat array kosong
-  let messages = JSON.parse(localStorage.getItem("guestMessages")) || [];
-  
-  // Masukkan pesan baru ke urutan paling atas
-  messages.unshift(newMsg);
+  // Ubah teks tombol menjadi "Mengirim..."
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Mengirim...";
 
-  // Simpan kembali ke localStorage
-  localStorage.setItem("guestMessages", JSON.stringify(messages));
-
-  // Reset form dan muat ulang daftar pesan
-  nameInput.value = "";
-  messageInput.value = "";
-  loadMessages();
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors", // Diperlukan untuk Google Apps Script
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    alert("Ucapan dan doa berhasil dikirim. Terima kasih!");
+    nameInput.value = "";
+    messageInput.value = "";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Kirim Ucapan";
+    
+    // Muat ulang daftar pesan setelah beberapa detik
+    setTimeout(loadMessages, 1500);
+  })
+  .catch(error => {
+    console.error("Gagal mengirim:", error);
+    alert("Terjadi kesalahan saat mengirim pesan.");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Kirim Ucapan";
+  });
 }
 
-// Fungsi untuk menampilkan daftar pesan dari localStorage ke halaman
+// Fungsi untuk mengambil dan menampilkan daftar pesan dari Google Spreadsheet
 function loadMessages() {
   const container = document.getElementById("messages-container");
   if (!container) return;
 
-  const messages = JSON.parse(localStorage.getItem("guestMessages")) || [];
+  container.innerHTML = `
+    <div class="text-center py-4 text-gray-400 text-xs italic">
+      Memuat ucapan...
+    </div>
+  `;
 
-  if (messages.length === 0) {
-    container.innerHTML = `
-      <div class="text-center py-4 text-gray-400 text-xs italic">
-        Belum ada ucapan. Jadilah yang pertama memberikan doa!
-      </div>
-    `;
-    return;
-  }
+  fetch(SCRIPT_URL)
+    .then(response => response.json())
+    .then(messages => {
+      if (!messages || messages.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-4 text-gray-400 text-xs italic">
+            Belum ada ucapan. Jadilah yang pertama memberikan doa!
+          </div>
+        `;
+        return;
+      }
 
-  container.innerHTML = "";
-  messages.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "bg-white p-4 rounded-xl border border-gray-100 shadow-xs space-y-1";
-    card.innerHTML = `
-      <div class="flex justify-between items-center">
-        <h5 class="font-serif font-bold text-xs text-[#3a5a40]">${escapeHTML(item.name)}</h5>
-        <span class="text-[9px] text-gray-400">${item.date}</span>
-      </div>
-      <p class="text-xs text-gray-600 leading-relaxed">${escapeHTML(item.message)}</p>
-    `;
-    container.appendChild(card);
-  });
+      container.innerHTML = "";
+      messages.forEach(item => {
+        // Format tanggal agar rapi
+        let formattedDate = "Baru saja";
+        if (item.date) {
+          try {
+            let d = new Date(item.date);
+            formattedDate = d.toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          } catch(e) {}
+        }
+
+        const card = document.createElement("div");
+        card.className = "bg-white p-4 rounded-xl border border-gray-100 shadow-xs space-y-1";
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <h5 class="font-serif font-bold text-xs text-[#3a5a40]">${escapeHTML(item.name)}</h5>
+            <span class="text-[9px] text-gray-400">${formattedDate}</span>
+          </div>
+          <p class="text-xs text-gray-600 leading-relaxed">${escapeHTML(item.message)}</p>
+        `;
+        container.appendChild(card);
+      });
+    })
+    .catch(error => {
+      console.error("Gagal memuat pesan:", error);
+      container.innerHTML = `
+        <div class="text-center py-4 text-red-400 text-xs">
+          Gagal memuat daftar ucapan.
+        </div>
+      `;
+    });
 }
 
-// Fungsi keamanan kecil untuk mencegah karakter HTML berbahaya (XSS)
+// Keamanan kecil untuk mencegah karakter HTML berbahaya (XSS)
 function escapeHTML(str) {
+  if (!str) return "";
   return str.replace(/[&<>'"]/g, 
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
+
 
 // Panggil fungsi muat pesan saat halaman pertama kali dibuka
 document.addEventListener("DOMContentLoaded", function () {
